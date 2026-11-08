@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mathnotes Ecosystem Live Simulator - Student, Teacher & Agents OS (India 2026)</title>
+  <title>Mathnotes STEM Ecosystem Live Simulator - Math, Physics, Chemistry (Class 8-12, JEE, NEET) | Bilingual English & à¤¹à¤¿à¤¨à¥à¤¦à¥€</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- KaTeX for beautiful LaTeX rendering -->
@@ -80,19 +80,27 @@
       </div>
     </div>
 
-    <!-- Mode Selector Tabs -->
-    <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
-      <button id="btnStudentApp" onclick="switchApp('student')" class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-sky-600 text-white shadow">
-        <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
-        Mathnotes (Student)
-      </button>
-      <button id="btnTeacherApp" onclick="switchApp('teacher')" class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white">
-        <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
-        Mathnotes Teacher
-      </button>
-      <button id="btnAgentsApp" onclick="switchApp('agents')" class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white">
-        <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
-        Command OS (Agents)
+    <!-- Mode Selector Tabs & Language Switcher -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <button id="btnStudentApp" onclick="switchApp('student')" class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-sky-600 text-white shadow">
+          <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+          <span id="tabStudentLabel">Student App</span>
+        </button>
+        <button id="btnTeacherApp" onclick="switchApp('teacher')" class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white">
+          <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+          <span id="tabTeacherLabel">Teacher App</span>
+        </button>
+        <button id="btnAgentsApp" onclick="switchApp('agents')" class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white">
+          <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+          <span id="tabAgentsLabel">Command OS</span>
+        </button>
+      </div>
+
+      <!-- Bilingual Language Toggle -->
+      <button id="langToggleBtn" onclick="toggleLanguage()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all bg-slate-900/90 border border-amber-500/40 text-amber-300 hover:bg-slate-800 shadow">
+        <i data-lucide="globe" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span id="langLabel">ðŸŒ EN | à¤¹à¤¿à¤¨à¥à¤¦à¥€</span>
       </button>
     </div>
 
@@ -363,6 +371,90 @@
       role: 'student'
     };
     let coursesData = [];
+    function setSubjectFilter(sub) {
+      currentSubject = sub;
+      renderScreen();
+    }
+
+    function setGradeFilter(grd) {
+      currentGrade = grd;
+      renderScreen();
+    }
+
+    function getFilteredCourses() {
+      return coursesData.filter(c => {
+        const matchSub = currentSubject === 'all' || c.subjectKey === currentSubject;
+        const matchGrd = currentGrade === 'all' || c.gradeKey === currentGrade;
+        return matchSub && matchGrd;
+      });
+    }
+
+    // AI Course & Quiz Generator State for Teachers
+    let teacherGenState = {
+      subject: 'Physics',
+      grade: 'Class 11 & JEE/NEET',
+      lang: 'hi',
+      topic: 'à¤—à¤¤à¤¿ à¤•à¥‡ à¤¨à¤¿à¤¯à¤® à¤à¤µà¤‚ à¤˜à¤°à¥à¤·à¤£ (Newton Laws & Friction)',
+      isGenerated: false,
+      isPublishing: false,
+      publishedCourseId: null,
+      generatedModules: [
+        {
+          title: "Module 1: Vector Kinematics & 2D Trajectories",
+          titleHi: "à¤‡à¤•à¤¾à¤ˆ 1: à¤¸à¤¦à¤¿à¤¶ à¤—à¤¤à¤¿à¤•à¥€ à¤à¤µà¤‚ à¤¦à¥à¤µà¤¿à¤µà¤¿à¤®à¥€à¤¯ à¤ªà¥à¤°à¤•à¥à¤·à¥‡à¤ªà¥à¤¯ à¤—à¤¤à¤¿",
+          formula: "\\vec{v} = \\vec{u} + \\vec{a}t, \\quad R = \\frac{u^2 \\sin(2\\theta)}{g}",
+          lessons: ["Vector resolution & components", "Equation of trajectory: y = x \\tan\\theta - \\frac{g x^2}{2u^2 \\cos^2\\theta}"]
+        },
+        {
+          title: "Module 2: Newton's Laws & Free-Body Dynamics",
+          titleHi: "à¤‡à¤•à¤¾à¤ˆ 2: à¤¨à¥à¤¯à¥‚à¤Ÿà¤¨ à¤•à¥‡ à¤—à¤¤à¤¿ à¤¨à¤¿à¤¯à¤® à¤à¤µà¤‚ à¤¬à¤² à¤†à¤°à¥‡à¤– (FBD)",
+          formula: "\\sum \\vec{F}_{ext} = m\\vec{a}, \\quad f_s \\le \\mu_s N",
+          lessons: ["Inertial frames & pseudo force", "Pulley-block constraint invariants"]
+        },
+        {
+          title: "Module 3: NTA CBT Practice Quiz (+4 / -1)",
+          titleHi: "à¤‡à¤•à¤¾à¤ˆ 3: à¤¸à¥€à¤¬à¥€à¤Ÿà¥€ à¤…à¤­à¥à¤¯à¤¾à¤¸ à¤ªà¥à¤°à¤¶à¥à¤¨ à¤ªà¤¤à¥à¤° (+4 / -1 à¤…à¤‚à¤•à¤¨)",
+          formula: "W = \\int \\vec{F} \\cdot d\\vec{r} = \\Delta K",
+          lessons: ["10 Single Choice JEE Problems", "4 Numerical Integer Type Questions"]
+        }
+      ]
+    };
+
+    function teacherTriggerAIGenerate() {
+      const topicInp = document.getElementById('aiTopicInput');
+      if (topicInp && topicInp.value) teacherGenState.topic = topicInp.value;
+      const subInp = document.getElementById('aiSubjectSelect');
+      if (subInp) teacherGenState.subject = subInp.value;
+      const grdInp = document.getElementById('aiGradeSelect');
+      if (grdInp) teacherGenState.grade = grdInp.value;
+      const langInp = document.getElementById('aiLangSelect');
+      if (langInp) teacherGenState.lang = langInp.value;
+
+      teacherGenState.isGenerated = true;
+      renderScreen();
+      showPushToast(
+        'teacher',
+        currentLang === 'hi' ? 'âœ¨ à¤à¤†à¤ˆ à¤ªà¤¾à¤ à¥à¤¯à¤•à¥à¤°à¤® à¤µ à¤•à¥à¤µà¤¿à¤œà¤¼ à¤¤à¥ˆà¤¯à¤¾à¤°!' : 'âœ¨ AI Curriculum & Quiz Generated!',
+        Generated 3 structured modules for  () with LaTeX formulas.
+      );
+    }
+
+    async function teacherPublishLiveToWordPress() {
+      teacherGenState.isPublishing = true;
+      renderScreen();
+
+      // Simulate live sync to WordPress / Tutor LMS
+      setTimeout(() => {
+        teacherGenState.isPublishing = false;
+        teacherGenState.publishedCourseId = 798 + Math.floor(Math.random() * 30);
+        renderScreen();
+        showPushToast(
+          'teacher',
+          currentLang === 'hi' ? 'ðŸš€ à¤µà¤°à¥à¤¡à¤ªà¥à¤°à¥‡à¤¸ à¤Ÿà¥à¤¯à¥‚à¤Ÿà¤° à¤à¤²à¤à¤®à¤à¤¸ à¤ªà¤° à¤²à¤¾à¤‡à¤µ!' : 'ðŸš€ Published to Tutor LMS Live!',
+          Course ID # is live on mathnotes.courses with full topic & lesson hierarchy.
+        );
+      }, 1200);
+    }
     let studentMessages = [
       {
         role: 'assistant',
@@ -718,23 +810,50 @@
                 <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Featured Masterclasses</h4>
                 <button onclick="setTab('courses')" class="text-xs text-sky-400 font-semibold">View All</button>
               </div>
+              <!-- STEM Subject Filter -->
+              <div class="space-y-2 pt-1 pb-1">
+                <div class="flex items-center justify-between text-xs font-bold text-white">
+                  <span>${currentLang === 'hi' ? 'विषय चुनें (STEM Subjects)' : 'Explore STEM Disciplines'}</span>
+                  <span class="text-[10px] text-sky-400 font-mono">Class 8-12 • JEE • NEET</span>
+                </div>
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                  <button onclick="setSubjectFilter('all')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${currentSubject === 'all' ? 'bg-sky-600 text-white' : 'bg-slate-900 text-slate-400 border border-slate-800'}">
+                    ${currentLang === 'hi' ? 'सभी विषय' : 'All STEM'}
+                  </button>
+                  <button onclick="setSubjectFilter('physics')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${currentSubject === 'physics' ? 'bg-sky-600 text-white' : 'bg-slate-900 text-slate-400 border border-slate-800'}">
+                    ${currentLang === 'hi' ? 'भौतिक विज्ञान (Physics)' : 'Physics'}
+                  </button>
+                  <button onclick="setSubjectFilter('chemistry')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${currentSubject === 'chemistry' ? 'bg-sky-600 text-white' : 'bg-slate-900 text-slate-400 border border-slate-800'}">
+                    ${currentLang === 'hi' ? 'रसायन विज्ञान (Chemistry)' : 'Chemistry'}
+                  </button>
+                  <button onclick="setSubjectFilter('math')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${currentSubject === 'math' ? 'bg-sky-600 text-white' : 'bg-slate-900 text-slate-400 border border-slate-800'}">
+                    ${currentLang === 'hi' ? 'गणित (Math)' : 'Mathematics'}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Filtered Courses Stream -->
               <div class="space-y-3">
-                ${coursesData.map(c => `
+                ${getFilteredCourses().map(c => `
                   <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow">
                     <img src="${c.image}" class="w-full h-28 object-cover" />
                     <div class="p-3">
                       <div class="flex justify-between items-center">
                         <span class="text-[10px] bg-slate-800 text-sky-400 font-semibold px-2 py-0.5 rounded">${c.subject}</span>
-                        <span class="text-xs font-black text-white">₹${c.price}</span>
+                        <span class="text-[10px] bg-sky-500/20 text-sky-300 font-bold px-2 py-0.5 rounded border border-sky-500/30">${c.gradeLabel}</span>
                       </div>
-                      <h5 class="text-xs font-bold text-white mt-1.5 line-clamp-1">${c.title}</h5>
-                      <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">${c.desc}</p>
+                      <h5 class="text-xs font-bold text-white mt-1.5 line-clamp-1">
+                        ${currentLang === 'hi' && c.titleHi ? c.titleHi : c.title}
+                      </h5>
+                      <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                        ${currentLang === 'hi' && c.descHi ? c.descHi : c.desc}
+                      </p>
                       <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2.5 pt-2 border-t border-slate-800/80">
                         <span class="flex items-center gap-1 text-amber-400 font-semibold">
                           <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i> ${c.rating}
                         </span>
                         <button onclick="openCheckoutModal(${c.id})" class="text-sky-400 font-bold bg-sky-500/10 px-2 py-1 rounded hover:bg-sky-500/20">
-                          Enroll (UPI) →
+                          ${currentLang === 'hi' ? 'प्रवेश लें (निःशुल्क) →' : 'Enroll Free →'}
                         </button>
                       </div>
                     </div>
@@ -841,32 +960,73 @@
               </button>
             </div>
 
-            <!-- Configuration Glass Card -->
-            <div class="glass-card p-4 space-y-3">
-              <div>
-                <label class="text-[11px] font-bold text-slate-300 uppercase">Target Exam Track:</label>
-                <div class="flex flex-wrap gap-1.5 mt-1.5">
-                  <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 px-2.5 py-1 rounded-lg font-bold">JEE Advanced (Paper 1)</span>
-                  <span class="text-[10px] bg-slate-800 text-slate-400 px-2.5 py-1 rounded-lg">JEE Mains 2026</span>
-                  <span class="text-[10px] bg-slate-800 text-slate-400 px-2.5 py-1 rounded-lg">UPSC CSAT</span>
+            <!-- AI STEM Curriculum & Quiz Generator Configuration -->
+            <div class="glass-card p-4 space-y-3 border border-emerald-500/30">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">STEM & CLASS 8-12 BLUEPRINT</span>
+                <span class="text-[10px] text-emerald-400 font-mono font-bold">Bilingual AI</span>
+              </div>
+
+              <!-- Subject & Grade Dropdowns -->
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[10px] text-slate-300 font-bold uppercase">${currentLang === 'hi' ? 'à¤µà¤¿à¤·à¤¯ (Subject):' : 'STEM Subject:'}</label>
+                  <select id="aiSubjectSelect" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2 py-1.5 text-xs text-white mt-1">
+                    <option value="Physics">Physics (à¤­à¥Œà¤¤à¤¿à¤• à¤µà¤¿à¤œà¥à¤žà¤¾à¤¨)</option>
+                    <option value="Chemistry">Chemistry (à¤°à¤¸à¤¾à¤¯à¤¨ à¤µà¤¿à¤œà¥à¤žà¤¾à¤¨)</option>
+                    <option value="Mathematics">Mathematics (à¤—à¤£à¤¿à¤¤)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[10px] text-slate-300 font-bold uppercase">${currentLang === 'hi' ? 'à¤•à¤•à¥à¤·à¤¾ / à¤ªà¤°à¥€à¤•à¥à¤·à¤¾:' : 'Grade / Target:'}</label>
+                  <select id="aiGradeSelect" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2 py-1.5 text-xs text-white mt-1">
+                    <option value="Class 11 & JEE/NEET">Class 11 & JEE / NEET</option>
+                    <option value="Class 12 & Target">Class 12 & Target</option>
+                    <option value="Class 10th Boards">Class 10th Boards</option>
+                    <option value="Class 9th Foundation">Class 9th Foundation</option>
+                    <option value="Class 8th Foundation">Class 8th Foundation</option>
+                  </select>
                 </div>
               </div>
 
               <div>
-                <label class="text-[11px] font-bold text-slate-300 uppercase">Topic Focus:</label>
-                <input type="text" value="Definite Integrals & Complex Numbers" class="w-full bg-slate-950/80 border border-slate-700/60 rounded-xl px-3 py-1.5 text-xs text-white mt-1 outline-none" />
+                <label class="text-[10px] text-slate-300 font-bold uppercase">${currentLang === 'hi' ? 'à¤…à¤§à¥à¤¯à¤¾à¤¯ / à¤®à¥à¤–à¥à¤¯ à¤¸à¤‚à¤•à¤²à¥à¤ªà¤¨à¤¾ (Topic Focus):' : 'Chapter / Concept Focus:'}</label>
+                <input id="aiTopicInput" type="text" value="${teacherGenState.topic}" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white mt-1 outline-none" />
               </div>
 
               <div class="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <label class="text-[10px] text-slate-400 font-bold uppercase">Questions:</label>
-                  <input type="text" value="10 Questions" class="w-full bg-slate-950/80 border border-slate-700/60 rounded-xl px-2.5 py-1 text-xs text-white mt-1" />
+                  <label class="text-[10px] text-slate-400 font-bold uppercase">${currentLang === 'hi' ? 'à¤­à¤¾à¤·à¤¾ (Language):' : 'Language:'}</label>
+                  <select id="aiLangSelect" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2 py-1 text-xs text-white mt-1">
+                    <option value="hi">à¤¹à¤¿à¤¨à¥à¤¦à¥€ (Hindi)</option>
+                    <option value="en">English</option>
+                    <option value="hinglish">Hinglish</option>
+                  </select>
                 </div>
                 <div>
-                  <label class="text-[10px] text-slate-400 font-bold uppercase">Marking Scheme:</label>
-                  <input type="text" value="+4 / -1" class="w-full bg-slate-950/80 border border-slate-700/60 rounded-xl px-2.5 py-1 text-xs text-white mt-1" />
+                  <label class="text-[10px] text-slate-400 font-bold uppercase">${currentLang === 'hi' ? 'à¤…à¤‚à¤•à¤¨ à¤ªà¤¦à¥à¤§à¤¤à¤¿:' : 'Marking Scheme:'}</label>
+                  <input type="text" value="+4 / -1 (JEE / NEET)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-2 py-1 text-xs text-white mt-1" />
                 </div>
               </div>
+
+              <div class="flex gap-2 pt-1">
+                <button onclick="teacherTriggerAIGenerate()" class="flex-1 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                  ${currentLang === 'hi' ? 'à¤à¤†à¤ˆ à¤¸à¥‡ à¤ªà¤¾à¤ à¥à¤¯à¤•à¥à¤°à¤® à¤µ à¤•à¥à¤µà¤¿à¤œà¤¼ à¤¬à¤¨à¤¾à¤à¤‚' : 'âœ¨ AI Generate STEM Lessons & Quizzes'}
+                </button>
+              </div>
+            </div>
+
+            <!-- Publish to Tutor LMS Action Banner -->
+            <div class="glass-card p-3 rounded-2xl border border-indigo-500/30 flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-white">${currentLang === 'hi' ? 'à¤µà¤°à¥à¤¡à¤ªà¥à¤°à¥‡à¤¸ à¤Ÿà¥à¤¯à¥‚à¤Ÿà¤° à¤à¤²à¤à¤®à¤à¤¸ à¤²à¤¾à¤‡à¤µ à¤¸à¤¿à¤‚à¤•' : 'WordPress Tutor LMS Sync'}</p>
+                <p class="text-[10px] text-slate-400">${teacherGenState.publishedCourseId ? `Live on mathnotes.courses (ID: #${teacherGenState.publishedCourseId})` : 'Connected to mathnotes.courses via REST API'}</p>
+              </div>
+              <button onclick="teacherPublishLiveToWordPress()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow">
+                <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+                ${teacherGenState.isPublishing ? 'Publishing...' : (currentLang === 'hi' ? 'à¤²à¤¾à¤‡à¤µ à¤•à¤°à¥‡à¤‚' : 'Publish Live')}
+              </button>
             </div>
 
             <!-- Generated Questions -->
