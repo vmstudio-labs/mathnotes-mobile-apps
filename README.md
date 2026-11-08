@@ -21,7 +21,7 @@ To test both mobile apps with live API connectivity and interactive AI right now
 👉 Open [`live-preview/index.html`](./live-preview/index.html) in any web browser.
 
 **Features to test in the simulator:**
-1. **One-Click Switcher**: Toggle between **Mathnotes (Student)** and **Mathnotes Teacher**.
+1. **One-Click Switcher**: Toggle seamlessly between **Mathnotes (Student)**, **Mathnotes Teacher**, and **Command OS (Agents)**.
 2. **Interactive Push Alerts**: Click **"Test Push Alert"** to trigger simulated device push notifications (Quiz deadline reminders for students, student doubt alerts for teachers).
 3. **Interactive Quizzes**: Tap **"Try Quiz"** to take an intuitive calculus limit checkpoint quiz with LaTeX rendering.
 4. **Google OAuth Switcher**: Click the user badge to switch between student and educator authenticated sessions.
