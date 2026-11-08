@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mathnotes Ecosystem Live Simulator - Student & Teacher Apps (India 2026)</title>
+  <title>Mathnotes Ecosystem Live Simulator - Student, Teacher & Agents OS (India 2026)</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- KaTeX for beautiful LaTeX rendering -->
@@ -51,6 +51,11 @@
                   radial-gradient(circle at 15% 85%, rgba(37, 99, 235, 0.15), transparent 45%),
                   #07090e;
     }
+        .aurora-agents-bg {
+      background: radial-gradient(circle at 85% 15%, rgba(99, 102, 241, 0.22), transparent 45%),
+                  radial-gradient(circle at 15% 85%, rgba(236, 72, 153, 0.16), transparent 45%),
+                  #07090e;
+    }
     .aurora-teacher-bg {
       background: radial-gradient(circle at 85% 15%, rgba(139, 92, 246, 0.22), transparent 45%),
                   radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.16), transparent 45%),
@@ -84,6 +89,10 @@
       <button id="btnTeacherApp" onclick="switchApp('teacher')" class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white">
         <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
         Mathnotes Teacher
+      </button>
+      <button id="btnAgentsApp" onclick="switchApp('agents')" class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white">
+        <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+        Command OS (Agents)
       </button>
     </div>
 
@@ -510,22 +519,35 @@
 
     function switchApp(app) {
       currentApp = app;
-      currentTab = app === 'student' ? 'home' : 'dashboard';
+      if (app === 'student') currentTab = 'home';
+      else if (app === 'teacher') currentTab = 'dashboard';
+      else currentTab = 'cockpit';
+
       const btnS = document.getElementById('btnStudentApp');
       const btnT = document.getElementById('btnTeacherApp');
+      const btnA = document.getElementById('btnAgentsApp');
 
       if (app === 'student') {
         btnS.className = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-sky-600 text-white shadow";
         btnT.className = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white";
+        if (btnA) btnA.className = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white";
         currentUser.name = "Vikram";
         currentUser.email = "student@mathnotes.courses";
         currentUser.role = "student";
-      } else {
+      } else if (app === 'teacher') {
         btnT.className = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-emerald-600 text-white shadow";
         btnS.className = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white";
+        if (btnA) btnA.className = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white";
         currentUser.name = "Webxpro Digital";
         currentUser.email = "teachers@mathnotes.courses";
         currentUser.role = "instructor";
+      } else {
+        if (btnA) btnA.className = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all bg-indigo-600 text-white shadow";
+        btnS.className = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white";
+        btnT.className = "flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-white";
+        currentUser.name = "Arya (Agent Lead)";
+        currentUser.email = "executive@mathnotes.courses";
+        currentUser.role = "director";
       }
 
       document.getElementById('topUserName').innerText = currentUser.name.split(' ')[0];
@@ -542,8 +564,10 @@
       const nav = document.getElementById('bottomNav');
       if (currentApp === 'student') {
         renderStudentScreen(container, nav);
-      } else {
+      } else if (currentApp === 'teacher') {
         renderTeacherScreen(container, nav);
+      } else {
+        renderAgentsScreen(container, nav);
       }
       lucide.createIcons();
       renderLaTeX(container);
@@ -1306,6 +1330,510 @@
       );
     }
 
+        // --- AGENTS OS SCREENS ---
+    function renderAgentsScreen(container, nav) {
+      container.className = "flex-1 overflow-y-auto aurora-agents-bg flex flex-col relative pb-20";
+      nav.className = "floating-glass-dock mx-4 mb-3 p-1.5 flex items-center justify-around z-40 shrink-0";
+      nav.innerHTML = `
+        <button onclick="setTab('cockpit')" class="flex flex-col items-center gap-0.5 px-2 py-1 ${currentTab === 'cockpit' ? 'text-indigo-400 font-bold' : 'text-slate-400'}">
+          <i data-lucide="shield" class="w-4 h-4"></i>
+          <span class="text-[9px]">Cockpit</span>
+        </button>
+        <button onclick="setTab('studio')" class="flex flex-col items-center gap-0.5 px-2 py-1 ${currentTab === 'studio' ? 'text-indigo-400 font-bold' : 'text-slate-400'}">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span class="text-[9px]">DPP Studio</span>
+        </button>
+        <button onclick="setTab('radar')" class="flex flex-col items-center gap-0.5 px-2 py-1 ${currentTab === 'radar' ? 'text-indigo-400 font-bold' : 'text-slate-400'}">
+          <i data-lucide="trending-up" class="w-4 h-4"></i>
+          <span class="text-[9px]">SEO Radar</span>
+        </button>
+        <button onclick="setTab('leads')" class="flex flex-col items-center gap-0.5 px-2 py-1 ${currentTab === 'leads' ? 'text-indigo-400 font-bold' : 'text-slate-400'}">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span class="text-[9px]">CRM Leads</span>
+        </button>
+        <button onclick="setTab('board')" class="flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-xl ${currentTab === 'board' ? 'bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-400/40' : 'text-slate-400'}">
+          <i data-lucide="cpu" class="w-4 h-4"></i>
+          <span class="text-[9px]">Paperclip</span>
+        </button>
+      `;
+
+      if (currentTab === 'studio') {
+        renderAgentsStudio(container);
+      } else if (currentTab === 'radar') {
+        renderAgentsRadar(container);
+      } else if (currentTab === 'leads') {
+        renderAgentsLeads(container);
+      } else if (currentTab === 'board') {
+        renderAgentsBoard(container);
+      } else {
+        renderAgentsCockpit(container);
+      }
+    }
+
+    function renderAgentsCockpit(container) {
+      container.innerHTML = `
+        <div class="p-4 space-y-4">
+          <!-- Top Executive Banner -->
+          <div class="flex items-center justify-between pt-1">
+            <div>
+              <span class="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold flex items-center gap-1.5 inline-flex">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                SOVEREIGN COMMAND OS
+              </span>
+              <h2 class="text-base font-extrabold text-white mt-1">Executive Cockpit</h2>
+              <p class="text-[11px] text-slate-400">mathnotes.courses &bull; Company MAT</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="agentPurgeCache()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60" title="Purge Cache">
+                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+              </button>
+              <button onclick="agentResyncRAG()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60" title="Resync AI Vectors">
+                <i data-lucide="refresh-cw" class="w-4 h-4 text-indigo-400"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Metric Cards Grid -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="glass-card p-3 rounded-2xl border border-slate-800/80">
+              <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-medium">Students</span>
+                <i data-lucide="users" class="w-3.5 h-3.5 text-sky-400"></i>
+              </div>
+              <p class="text-lg font-black text-white">1,420</p>
+              <span class="text-[10px] text-emerald-400 font-bold">&uarr; +12.4% MoM</span>
+            </div>
+
+            <div class="glass-card p-3 rounded-2xl border border-slate-800/80">
+              <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-medium">Monthly Rev</span>
+                <i data-lucide="banknote" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </div>
+              <p class="text-lg font-black text-emerald-400">&#8377;46,200</p>
+              <span class="text-[10px] text-slate-400 font-medium">Razorpay Verified</span>
+            </div>
+
+            <div class="glass-card p-3 rounded-2xl border border-slate-800/80">
+              <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-medium">Tutor Courses</span>
+                <i data-lucide="book-open" class="w-3.5 h-3.5 text-purple-400"></i>
+              </div>
+              <p class="text-lg font-black text-white">6</p>
+              <span class="text-[10px] text-purple-300 font-medium">4.94 &#9733; Rating</span>
+            </div>
+
+            <div class="glass-card p-3 rounded-2xl border border-slate-800/80">
+              <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-medium">Paperclip MAT</span>
+                <i data-lucide="cpu" class="w-3.5 h-3.5 text-indigo-400"></i>
+              </div>
+              <p class="text-lg font-black text-indigo-300">4 Active</p>
+              <span class="text-[10px] text-emerald-400 font-bold">100% Autonomous</span>
+            </div>
+          </div>
+
+          <!-- Infrastructure Telemetry -->
+          <div class="glass-card p-3.5 rounded-2xl border border-slate-800/80 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="server" class="w-3.5 h-3.5 text-indigo-400"></i>
+                Infrastructure Health
+              </h3>
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono font-bold">OPTIMAL</span>
+            </div>
+            <div class="space-y-1.5 text-xs">
+              <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-800/60">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span class="text-slate-300 text-[11px]">LiteSpeed Redis Cache</span>
+                </div>
+                <span class="text-slate-400 font-mono text-[10px]">98.4% Hit</span>
+              </div>
+              <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-800/60">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span class="text-slate-300 text-[11px]">Cloudflare Edge (server184)</span>
+                </div>
+                <span class="text-slate-400 font-mono text-[10px]">Strict SSL</span>
+              </div>
+              <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-800/60">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span class="text-slate-300 text-[11px]">AIPKit Socratic Vector Graph</span>
+                </div>
+                <span class="text-slate-400 font-mono text-[10px]">124 Nodes</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Autonomous Sprints -->
+          <div class="glass-card p-3.5 rounded-2xl border border-slate-800/80 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="activity" class="w-3.5 h-3.5 text-indigo-400"></i>
+                Autonomous Sprints (MAT)
+              </h3>
+              <span class="text-[10px] text-slate-400">Sprint 1</span>
+            </div>
+            
+            <div class="p-2.5 rounded-xl bg-slate-900/60 border border-indigo-500/20 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white">MAT-1: Probability Pillar Post</span>
+                <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">In Progress</span>
+              </div>
+              <p class="text-[11px] text-slate-400">Assigned: Arya &bull; Claude 3.5 Sonnet &bull; Target: Form ID 3 Lead Hook</p>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white">MAT-2: JEE 2026 Formula Verification</span>
+                <span class="text-[9px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded font-mono">Ready For Review</span>
+              </div>
+              <p class="text-[11px] text-slate-400">Assigned: Kabir &bull; DeepSeek-R1 &bull; 24 KaTeX Proofs Validated</p>
+            </div>
+
+            <button onclick="agentTriggerSprint()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2 shadow">
+              <i data-lucide="play" class="w-3.5 h-3.5"></i>
+              Trigger Paperclip Company Sprint
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAgentsStudio(container) {
+      container.innerHTML = `
+        <div class="p-4 space-y-4">
+          <div class="flex items-center justify-between pt-1">
+            <div>
+              <span class="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold">
+                ACADEMIC AGENT
+              </span>
+              <h2 class="text-base font-extrabold text-white mt-1">Autonomous DPP Studio</h2>
+              <p class="text-[11px] text-slate-400">Generates Daily Practice Problems for Tutor LMS</p>
+            </div>
+            <span class="text-xs bg-slate-800 text-indigo-300 px-2.5 py-1 rounded-xl font-mono border border-slate-700">JEE Adv (+4/-1)</span>
+          </div>
+
+          <!-- Formula & Question Preview -->
+          <div class="glass-card p-3.5 rounded-2xl border border-indigo-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">AI Generated DPP #42</span>
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-mono font-bold">Calculus Mastery</span>
+            </div>
+            <p class="text-xs font-medium text-slate-200">
+              Evaluate the definite integral using King's Symmetry Property:
+            </p>
+            <div class="bg-slate-950 p-3 rounded-xl border border-indigo-500/40 text-center text-sm font-semibold text-sky-300 overflow-x-auto">
+              $$\\int_0^{\\frac{\\pi}{2}} \\frac{\\sin^{2026}(x)}{\\sin^{2026}(x) + \\cos^{2026}(x)} \\, dx = \\frac{\\pi}{4}$$
+            </div>
+            <div class="text-[11px] text-slate-400 space-y-1">
+              <p class="text-slate-300 font-bold">&bull; Marking Scheme: <span class="text-emerald-400">+4.0 pts</span> for correct, <span class="text-red-400">-1.0 pt</span> for incorrect</p>
+              <p>&bull; Socratic Hint: Substitute $x = a + b - t = \\frac{\\pi}{2} - t$ and add equations $2I = \\int_0^{\\pi/2} 1 \\, dx$.</p>
+            </div>
+            <button onclick="agentDeployDPP()" class="w-full py-2 bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2 shadow">
+              <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+              Deploy DPP to Tutor LMS Course 739
+            </button>
+          </div>
+
+          <!-- Live Tutor LMS Courses Stream -->
+          <div class="glass-card p-3.5 rounded-2xl border border-slate-800/80 space-y-2.5">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="book-marked" class="w-3.5 h-3.5 text-indigo-400"></i>
+              Live Courses (Tutor LMS)
+            </h3>
+            <div class="space-y-1.5 text-xs">
+              <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-bold text-white">#739 JEE Advanced King's Property Calculus</p>
+                  <p class="text-[10px] text-slate-400">12 Lessons &bull; 8 Quizzes &bull; 850 Students</p>
+                </div>
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-mono">Live</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-bold text-white">#740 Linear Algebra & Vector Spaces</p>
+                  <p class="text-[10px] text-slate-400">18 Lessons &bull; 10 Quizzes &bull; 340 Students</p>
+                </div>
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-mono">Live</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-bold text-white">#741 Real Analysis for UPSC Math</p>
+                  <p class="text-[10px] text-slate-400">14 Lessons &bull; 6 Quizzes &bull; 230 Students</p>
+                </div>
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-mono">Live</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAgentsRadar(container) {
+      container.innerHTML = `
+        <div class="p-4 space-y-4">
+          <div class="flex items-center justify-between pt-1">
+            <div>
+              <span class="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold">
+                GROWTH ENGINE
+              </span>
+              <h2 class="text-base font-extrabold text-white mt-1">VM SEO Brain Radar</h2>
+              <p class="text-[11px] text-slate-400">50,000 Organic Traffic Challenge Tracker</p>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-xl font-mono font-bold">Target: 50,000</span>
+          </div>
+
+          <!-- 50k Challenge Progress -->
+          <div class="glass-card p-3.5 rounded-2xl border border-indigo-500/30 space-y-2.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-300 font-bold">Monthly Organic Traffic</span>
+              <span class="text-indigo-400 font-mono font-bold">9,240 / 50,000</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-indigo-500 to-sky-400 rounded-full" style="width: 18.5%"></div>
+            </div>
+            <p class="text-[11px] text-slate-400">18.5% achieved &bull; 40,760 visits remaining to reach milestone</p>
+          </div>
+
+          <!-- SEO Health & Link Equity -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="glass-card p-3 rounded-2xl border border-slate-800/80">
+              <p class="text-[11px] text-slate-400 font-medium">Internal Links</p>
+              <p class="text-lg font-black text-white">100</p>
+              <span class="text-[10px] text-emerald-400 font-bold">0 Orphan Posts</span>
+            </div>
+            <div class="glass-card p-3 rounded-2xl border border-slate-800/80">
+              <p class="text-[11px] text-slate-400 font-medium">Keywords Ranked</p>
+              <p class="text-lg font-black text-white">142</p>
+              <span class="text-[10px] text-indigo-400 font-bold">+18 Top 10 SERP</span>
+            </div>
+          </div>
+
+          <!-- Live Pillar Post Status -->
+          <div class="glass-card p-3.5 rounded-2xl border border-slate-800/80 space-y-2.5">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="share-2" class="w-3.5 h-3.5 text-indigo-400"></i>
+              Core Pillar Posts
+            </h3>
+            <div class="space-y-1.5 text-xs">
+              <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-white">Pillar #738: Mathematical Mastery</span>
+                  <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-mono">Lead Magnet Live</span>
+                </div>
+                <p class="text-[10px] text-slate-400">Embedded Fluent Form ID 3 &bull; 42 Internal Graph Links</p>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-white">Pillar #734: Tutor LMS Academic Architecture</span>
+                  <span class="text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded font-mono">Ranked #4</span>
+                </div>
+                <p class="text-[10px] text-slate-400">Syllabus & Pedagogy Breakdown &bull; 38 Internal Graph Links</p>
+              </div>
+            </div>
+
+            <button onclick="agentRunSEOAudit()" class="w-full py-2 bg-indigo-600/80 hover:bg-indigo-600 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2">
+              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+              Run Link Equity & Orphan Scan
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAgentsLeads(container) {
+      container.innerHTML = `
+        <div class="p-4 space-y-4">
+          <div class="flex items-center justify-between pt-1">
+            <div>
+              <span class="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold">
+                CONVERSION AUTOMATION
+              </span>
+              <h2 class="text-base font-extrabold text-white mt-1">CRM & Lead Desk</h2>
+              <p class="text-[11px] text-slate-400">FluentCRM Funnels & Form ID 3 Leads</p>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-xl font-mono font-bold">List 3 Active</span>
+          </div>
+
+          <!-- CRM Lists Overview -->
+          <div class="grid grid-cols-3 gap-2">
+            <div class="glass-card p-2.5 rounded-xl border border-slate-800 text-center">
+              <p class="text-[10px] text-slate-400">Students</p>
+              <p class="text-base font-black text-white">1,420</p>
+              <span class="text-[9px] text-slate-400">List 1</span>
+            </div>
+            <div class="glass-card p-2.5 rounded-xl border border-slate-800 text-center">
+              <p class="text-[10px] text-slate-400">Teachers</p>
+              <p class="text-base font-black text-white">24</p>
+              <span class="text-[9px] text-slate-400">List 2</span>
+            </div>
+            <div class="glass-card p-2.5 rounded-xl border border-indigo-500/40 text-center">
+              <p class="text-[10px] text-indigo-300">VIP Leads</p>
+              <p class="text-base font-black text-indigo-300">87</p>
+              <span class="text-[9px] text-indigo-400">List 3</span>
+            </div>
+          </div>
+
+          <!-- Live Funnel ID 1 Status -->
+          <div class="glass-card p-3.5 rounded-2xl border border-indigo-500/30 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-white">Funnel #1: VIP Lead Nurture Sequence</span>
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-mono font-bold">Published</span>
+            </div>
+            <p class="text-[11px] text-slate-300">Trigger: Form ID 3 submission on Post #738</p>
+            <div class="grid grid-cols-2 gap-2 text-center pt-1">
+              <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
+                <p class="text-[10px] text-slate-400">Open Rate</p>
+                <p class="text-sm font-black text-emerald-400">68.4%</p>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
+                <p class="text-[10px] text-slate-400">Click Rate (CTR)</p>
+                <p class="text-sm font-black text-sky-400">41.2%</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIP Lead Stream -->
+          <div class="glass-card p-3.5 rounded-2xl border border-slate-800/80 space-y-2.5">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="mail-check" class="w-3.5 h-3.5 text-indigo-400"></i>
+              Recent Formula Sheet Downloads
+            </h3>
+            <div class="space-y-1.5 text-xs">
+              <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-bold text-white">Rohan Mehta</p>
+                  <p class="text-[10px] text-slate-400">rohan.m@gmail.com &bull; 12m ago</p>
+                </div>
+                <span class="text-[9px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded font-mono">Calculus VIP</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-bold text-white">Ananya Sharma</p>
+                  <p class="text-[10px] text-slate-400">ananya.s@outlook.com &bull; 45m ago</p>
+                </div>
+                <span class="text-[9px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded font-mono">Algebra Lead</span>
+              </div>
+            </div>
+
+            <button onclick="agentBroadcastLeads()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              Send Instant Nurture Touch to List 3
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAgentsBoard(container) {
+      container.innerHTML = `
+        <div class="p-4 space-y-4">
+          <div class="flex items-center justify-between pt-1">
+            <div>
+              <span class="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold">
+                AUTONOMOUS EXECUTIVES
+              </span>
+              <h2 class="text-base font-extrabold text-white mt-1">Paperclip MAT Board</h2>
+              <p class="text-[11px] text-slate-400">agents.vmstudio.digital/MAT</p>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-xl font-mono font-bold">4 Running</span>
+          </div>
+
+          <!-- 4 Agents Stack -->
+          <div class="space-y-2">
+            <div class="glass-card p-3 rounded-2xl border border-slate-800 flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center font-bold text-sm text-indigo-300">AR</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <p class="text-xs font-bold text-white">Arya &bull; Content Director</p>
+                  <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-mono">Working</span>
+                </div>
+                <p class="text-[11px] text-slate-400 truncate">Claude 3.5 Sonnet &bull; Drafting Probability Article</p>
+              </div>
+            </div>
+
+            <div class="glass-card p-3 rounded-2xl border border-slate-800 flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-purple-600/30 border border-purple-500/40 flex items-center justify-center font-bold text-sm text-purple-300">KB</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <p class="text-xs font-bold text-white">Kabir &bull; Math & KaTeX Auditor</p>
+                  <span class="text-[9px] bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded font-mono">Idle</span>
+                </div>
+                <p class="text-[11px] text-slate-400 truncate">DeepSeek-R1 &bull; 24 Formulae Verified Clean</p>
+              </div>
+            </div>
+
+            <div class="glass-card p-3 rounded-2xl border border-slate-800 flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-pink-600/30 border border-pink-500/40 flex items-center justify-center font-bold text-sm text-pink-300">PR</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <p class="text-xs font-bold text-white">Priya &bull; Growth & CRM Lead</p>
+                  <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-mono">Working</span>
+                </div>
+                <p class="text-[11px] text-slate-400 truncate">GPT-4o &bull; Tracking Form ID 3 Opt-in Rates</p>
+              </div>
+            </div>
+
+            <div class="glass-card p-3 rounded-2xl border border-slate-800 flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-sky-600/30 border border-sky-500/40 flex items-center justify-center font-bold text-sm text-sky-300">DV</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <p class="text-xs font-bold text-white">Dev &bull; Systems & Monorepo</p>
+                  <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-mono">Working</span>
+                </div>
+                <p class="text-[11px] text-slate-400 truncate">Claude 3.5 Sonnet &bull; Expo SDK 52 CI/CD</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paperclip Terminal Log -->
+          <div class="glass-card p-3.5 rounded-2xl border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="terminal" class="w-3.5 h-3.5 text-indigo-400"></i>
+                Paperclip Realtime Log
+              </h3>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            </div>
+            <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 font-mono text-[10px] text-slate-300 space-y-1">
+              <p class="text-slate-500">[18:38:00] MAT Board initialized.</p>
+              <p class="text-indigo-400">[18:38:05] Arya: Commenced MAT-1 draft generation.</p>
+              <p class="text-purple-400">[18:38:15] Kabir: KaTeX audit passed for King's symmetry.</p>
+              <p class="text-pink-400">[18:38:22] Priya: 87 subscribers queued in FluentCRM Funnel 1.</p>
+              <p class="text-emerald-400">[18:38:30] Dev: GitHub Monorepo sync completed (18 files).</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- AGENTS ACTIONS ---
+    function agentPurgeCache() {
+      showPushToast('agents', 'âš¡ LiteSpeed & Cloudflare Cache Purged', 'Edge CDN cache cleared. All student endpoints invalidated.');
+    }
+
+    function agentResyncRAG() {
+      showPushToast('agents', 'ðŸ§  Socratic Vector Knowledge Resynced', '124 LaTeX formula nodes indexed for AIPKit bots.');
+    }
+
+    function agentDeployDPP() {
+      showPushToast('agents', 'ðŸš€ JEE Advanced DPP Published!', 'DPP #42 published to Tutor LMS Course 739 with +4/-1 scoring.');
+    }
+
+    function agentRunSEOAudit() {
+      showPushToast('agents', 'ðŸ” VM SEO Brain Equity Scan Complete', 'Analyzed 100 internal links. Zero orphaned posts found.');
+    }
+
+    function agentBroadcastLeads() {
+      showPushToast('agents', 'ðŸ“§ FluentCRM Funnel 1 Dispatched', 'Automated nurture email sent to 87 VIP formula sheet leads.');
+    }
+
+    function agentTriggerSprint() {
+      showPushToast('agents', 'ðŸ¤– Paperclip MAT Sprint Triggered', 'Autonomous tasks dispatched to Arya, Kabir, Priya, and Dev.');
+    }
+
     // --- TOAST NOTIFICATIONS ---
     function showPushToast(app, title, body) {
       const toast = document.getElementById('pushToast');
@@ -1313,7 +1841,7 @@
       const toastBody = document.getElementById('toastBody');
       const toastAppTitle = document.getElementById('toastAppTitle');
 
-      toastAppTitle.innerText = app === 'student' ? 'MATHNOTES STUDENT' : 'MATHNOTES TEACHER';
+      toastAppTitle.innerText = app === 'student' ? 'MATHNOTES STUDENT' : (app === 'teacher' ? 'MATHNOTES TEACHER' : 'MATHNOTES COMMAND OS');
       toastTitle.innerText = title;
       toastBody.innerText = body;
 
