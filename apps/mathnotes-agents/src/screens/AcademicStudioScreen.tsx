@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+﻿import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator, SafeAreaView, StatusBar, Platform } from 'react-native';
 import { api } from '../services/apiService';
 import { TutorCourse, DPPQuestion } from '../types';
 import { GlassCard } from '../components/GlassCard';
@@ -32,90 +32,102 @@ export const AcademicStudioScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Academic Studio</Text>
-          <Text style={styles.subtitle}>Tutor LMS Curriculum & High-Yield DPP Engine</Text>
-        </View>
-        <StatusPill label="CAO DESK" type="info" />
-      </View>
-
-      {/* AUTONOMOUS DPP SYNTHESIS */}
-      <GlassCard variant="glow">
-        <Text style={styles.cardHeader}>AUTONOMOUS JEE & UPSC DPP ENGINE</Text>
-        <Text style={styles.cardDesc}>
-          Synthesize daily practice problem sets using first-principles Socratic reasoning:
-        </Text>
-
-        <TouchableOpacity style={styles.generateBtn} onPress={handleGenerateDPP} disabled={generating}>
-          {generating ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <Text style={styles.btnText}>⚡ Synthesize Daily Practice Problem (DPP)</Text>
-          )}
-        </TouchableOpacity>
-
-        {dpp && (
-          <View style={styles.dppBox}>
-            <View style={styles.dppHeader}>
-              <StatusPill label={dpp.track} type="warning" />
-              <Text style={styles.dppDifficulty}>{dpp.difficulty}</Text>
-            </View>
-            <Text style={styles.dppQuestion}>{dpp.question}</Text>
-            <KaTeXPreview latex={dpp.formulaLatex} label="Analytical Derivation" />
-            
-            <View style={styles.optionsWrap}>
-              {dpp.options.map((opt, idx) => (
-                <View key={idx} style={[styles.optPill, idx === dpp.correctIndex && styles.optCorrect]}>
-                  <Text style={[styles.optText, idx === dpp.correctIndex && styles.optCorrectText]}>
-                    {String.fromCharCode(65 + idx)}. {opt}
-                  </Text>
-                </View>
-              ))}
-            </View>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#090D16" translucent />
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentWrap}>
+        <View style={styles.header}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.title}>Academic Studio</Text>
+            <Text style={styles.subtitle}>Tutor LMS Curriculum & High-Yield DPP Engine</Text>
           </View>
-        )}
-      </GlassCard>
+          <StatusPill label="CAO DESK" type="info" />
+        </View>
 
-      {/* COURSEWARE HIERARCHY */}
-      <Text style={styles.sectionTitle}>TUTOR LMS ACTIVE COURSES</Text>
-      {loading ? (
-        <ActivityIndicator color="#6366f1" style={{ marginTop: 20 }} />
-      ) : (
-        courses.map(course => (
-          <GlassCard key={course.id}>
-            <View style={styles.courseHeader}>
-              <Text style={styles.courseTitle}>{course.title}</Text>
-              <StatusPill label={course.isPublished ? 'PUBLISHED' : 'DRAFT'} type="success" />
+        {/* AUTONOMOUS DPP SYNTHESIS */}
+        <GlassCard variant="glow">
+          <Text style={styles.cardHeader}>AUTONOMOUS JEE & UPSC DPP ENGINE</Text>
+          <Text style={styles.cardDesc}>
+            Synthesize daily practice problem sets using first-principles Socratic reasoning:
+          </Text>
+
+          <TouchableOpacity style={styles.generateBtn} onPress={handleGenerateDPP} disabled={generating}>
+            {generating ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <Text style={styles.btnText}>âš¡ Synthesize Daily Practice Problem (DPP)</Text>
+            )}
+          </TouchableOpacity>
+
+          {dpp && (
+            <View style={styles.dppBox}>
+              <View style={styles.dppHeader}>
+                <StatusPill label={dpp.track} type="warning" />
+                <Text style={styles.dppDifficulty}>{dpp.difficulty}</Text>
+              </View>
+              <Text style={styles.dppQuestion}>{dpp.question}</Text>
+              <KaTeXPreview latex={dpp.formulaLatex} label="Analytical Derivation" />
+              
+              <View style={styles.optionsWrap}>
+                {dpp.options.map((opt, idx) => (
+                  <View key={idx} style={[styles.optPill, idx === dpp.correctIndex && styles.optCorrect]}>
+                    <Text style={[styles.optText, idx === dpp.correctIndex && styles.optCorrectText]}>
+                      {String.fromCharCode(65 + idx)}. {opt}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </View>
-            <Text style={styles.courseMeta}>
-              {course.subject} • {course.examTrack} • {course.totalLessons} Lessons
-            </Text>
-            <View style={styles.courseFooter}>
-              <Text style={styles.enrolledText}>👥 {course.enrolledCount} Students Enrolled</Text>
-              <Text style={styles.ratingText}>★ {course.rating.toFixed(2)}</Text>
-            </View>
-          </GlassCard>
-        ))
-      )}
-      <View style={{ height: 40 }} />
-    </ScrollView>
+          )}
+        </GlassCard>
+
+        {/* COURSEWARE HIERARCHY */}
+        <Text style={styles.sectionTitle}>TUTOR LMS ACTIVE COURSES</Text>
+        {loading ? (
+          <ActivityIndicator color="#6366f1" style={{ marginTop: 20 }} />
+        ) : (
+          courses.map(course => (
+            <GlassCard key={course.id}>
+              <View style={styles.courseHeader}>
+                <Text style={styles.courseTitle}>{course.title}</Text>
+                <StatusPill label={course.isPublished ? 'PUBLISHED' : 'DRAFT'} type="success" />
+              </View>
+              <Text style={styles.courseMeta}>
+                {course.subject} â€¢ {course.examTrack} â€¢ {course.totalLessons} Lessons
+              </Text>
+              <View style={styles.courseFooter}>
+                <Text style={styles.enrolledText}>ðŸ‘¥ {course.enrolledCount} Students Enrolled</Text>
+                <Text style={styles.ratingText}>â˜… {course.rating.toFixed(2)}</Text>
+              </View>
+            </GlassCard>
+          ))
+        )}
+        <View style={{ height: 48 }} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#090D16',
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : 0,
+  },
   container: {
     flex: 1,
     backgroundColor: '#090D16',
-    padding: 16,
+  },
+  contentWrap: {
+    paddingHorizontal: 16,
+    paddingBottom: 24,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 36,
+    marginTop: 12,
     marginBottom: 20,
+    gap: 8,
   },
   title: {
     fontSize: 22,
@@ -200,14 +212,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#cbd5e1',
     marginTop: 20,
-    marginBottom: 6,
+    marginBottom: 8,
     letterSpacing: 0.8,
   },
   courseHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    gap: 8,
+    gap: 12,
+    paddingRight: 2,
   },
   courseTitle: {
     fontSize: 15,
@@ -224,6 +237,7 @@ const styles = StyleSheet.create({
   courseFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginTop: 12,
     paddingTop: 8,
     borderTopWidth: 1,
@@ -238,5 +252,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#fbbf24',
     fontWeight: '700',
+    minWidth: 48,
+    textAlign: 'right',
   },
 });
