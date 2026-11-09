@@ -40,10 +40,12 @@ jobs:
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
           GRADLE_OPTS: "-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
+          JAVA_OPTS: "-Dsun.net.client.defaultConnectTimeout=120000 -Dsun.net.client.defaultReadTimeout=120000"
         run: |
           npx expo prebuild --platform android --clean --no-install
           cd android
           chmod +x gradlew
+          for i in 1 2 3; do ./gradlew --version && break || sleep 5; done
           ./gradlew assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx4096m"
           mkdir -p ../../../dist-apks
           cp app/build/outputs/apk/release/*.apk ../../../dist-apks/mathnotes-student.apk
@@ -85,10 +87,12 @@ jobs:
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
           GRADLE_OPTS: "-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
+          JAVA_OPTS: "-Dsun.net.client.defaultConnectTimeout=120000 -Dsun.net.client.defaultReadTimeout=120000"
         run: |
           npx expo prebuild --platform android --clean --no-install
           cd android
           chmod +x gradlew
+          for i in 1 2 3; do ./gradlew --version && break || sleep 5; done
           ./gradlew assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx4096m"
           mkdir -p ../../../dist-apks
           cp app/build/outputs/apk/release/*.apk ../../../dist-apks/mathnotes-teacher.apk
@@ -130,10 +134,12 @@ jobs:
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
           GRADLE_OPTS: "-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
+          JAVA_OPTS: "-Dsun.net.client.defaultConnectTimeout=120000 -Dsun.net.client.defaultReadTimeout=120000"
         run: |
           npx expo prebuild --platform android --clean --no-install
           cd android
           chmod +x gradlew
+          for i in 1 2 3; do ./gradlew --version && break || sleep 5; done
           ./gradlew assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx4096m"
           mkdir -p ../../../dist-apks
           cp app/build/outputs/apk/release/*.apk ../../../dist-apks/mathnotes-agents.apk
@@ -147,25 +153,32 @@ jobs:
   publish-release:
     name: Publish Official Release APKs
     needs: [build-student-apk, build-teacher-apk, build-agents-apk]
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     steps:
       - name: Download Student APK
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: mathnotes-student-apk
           path: dist-release
 
       - name: Download Teacher APK
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: mathnotes-teacher-apk
           path: dist-release
 
       - name: Download Agents APK
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: mathnotes-agents-apk
           path: dist-release
+
+      - name: Check available APKs
+        run: ls -la dist-release/ || true
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
@@ -175,12 +188,9 @@ jobs:
           body: |
             ### Official Mathnotes Android Application Packages (v1.0.0)
 
-            - **Mathnotes (Student)**: `mathnotes-student.apk`
-            - **Mathnotes Teacher**: `mathnotes-teacher.apk`
+            - **Mathnotes Student**: `mathnotes-student.apk`
+            - **Mathnotes Teacher Studio**: `mathnotes-teacher.apk`
             - **Mathnotes Command OS (Agents)**: `mathnotes-agents.apk`
 
             Download directly to your Android device to install and test with Tutor LMS Pro, FluentCRM, VM SEO Brain, and MathNotes AI.
-          files: |
-            dist-release/mathnotes-student.apk
-            dist-release/mathnotes-teacher.apk
-            dist-release/mathnotes-agents.apk
+          files: dist-release/*.apk
