@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Platform } from 'react-native';
 import { ExecutiveCockpitScreen } from '../screens/ExecutiveCockpitScreen';
 import { AcademicStudioScreen } from '../screens/AcademicStudioScreen';
-import { GrowthRadarScreen } from '../screens/GrowthRadarScreen';
-import { CRMLeadDeskScreen } from '../screens/CRMLeadDeskScreen';
+import { OperationsScreen } from '../screens/OperationsScreen';
 import { AITutorConsoleScreen } from '../screens/AITutorConsoleScreen';
 import { PaperclipCommanderScreen } from '../screens/PaperclipCommanderScreen';
 
-export type ScreenTab = 'cockpit' | 'academic' | 'growth' | 'leads' | 'ai' | 'paperclip';
+export type ScreenTab = 'cockpit' | 'academic' | 'ai' | 'operations' | 'paperclip';
 
 export const AgentsNavigator: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ScreenTab>('cockpit');
@@ -18,12 +17,10 @@ export const AgentsNavigator: React.FC = () => {
         return <ExecutiveCockpitScreen />;
       case 'academic':
         return <AcademicStudioScreen />;
-      case 'growth':
-        return <GrowthRadarScreen />;
-      case 'leads':
-        return <CRMLeadDeskScreen />;
       case 'ai':
         return <AITutorConsoleScreen />;
+      case 'operations':
+        return <OperationsScreen />;
       case 'paperclip':
         return <PaperclipCommanderScreen />;
       default:
@@ -34,35 +31,42 @@ export const AgentsNavigator: React.FC = () => {
   const tabs: { key: ScreenTab; label: string; icon: string }[] = [
     { key: 'cockpit', label: 'Cockpit', icon: '⚡' },
     { key: 'academic', label: 'Academic', icon: '📐' },
-    { key: 'growth', label: 'Growth', icon: '🚀' },
-    { key: 'leads', label: 'Leads', icon: '👥' },
     { key: 'ai', label: 'AI Tutor', icon: '🧠' },
-    { key: 'paperclip', label: 'Paperclip', icon: '📎' },
+    { key: 'operations', label: 'Operations', icon: '🚀' },
+    { key: 'paperclip', label: 'Fleet', icon: '📎' },
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.screenContainer}>{renderScreen()}</View>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#090D16" translucent />
+      <View style={styles.container}>
+        <View style={styles.screenContainer}>{renderScreen()}</View>
 
-      <View style={styles.tabBar}>
-        {tabs.map((t) => (
-          <TouchableOpacity
-            key={t.key}
-            style={[styles.tabItem, activeTab === t.key && styles.tabItemActive]}
-            onPress={() => setActiveTab(t.key)}
-          >
-            <Text style={styles.tabIcon}>{t.icon}</Text>
-            <Text style={[styles.tabLabel, activeTab === t.key && styles.tabLabelActive]}>
-              {t.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        <View style={styles.tabBar}>
+          {tabs.map((t) => (
+            <TouchableOpacity
+              key={t.key}
+              style={[styles.tabItem, activeTab === t.key && styles.tabItemActive]}
+              onPress={() => setActiveTab(t.key)}
+            >
+              <Text style={styles.tabIcon}>{t.icon}</Text>
+              <Text style={[styles.tabLabel, activeTab === t.key && styles.tabLabelActive]}>
+                {t.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#090D16',
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : 0,
+  },
   container: {
     flex: 1,
     backgroundColor: '#090D16',
@@ -72,26 +76,28 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    alignItems: 'center',
     backgroundColor: '#030712',
     borderTopWidth: 1,
     borderTopColor: '#1e293b',
-    paddingVertical: 10,
-    paddingBottom: 24,
+    paddingVertical: 8,
+    paddingBottom: Platform.OS === 'android' ? 12 : 24,
   },
   tabItem: {
+    flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 8,
+    justifyContent: 'center',
+    paddingVertical: 4,
   },
   tabItemActive: {
     transform: [{ scale: 1.05 }],
   },
   tabIcon: {
     fontSize: 20,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   tabLabel: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#64748b',
     fontWeight: '600',
   },
